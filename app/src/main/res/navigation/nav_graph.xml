@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.matches.home.HomeFragment"
+        android:label="HomeFragment" />
+    <fragment
+        android:id="@+id/calenderFragment"
+        android:name="com.example.matches.calender.CalenderFragment"
+        android:label="CalenderFragment" />
+    <fragment
+        android:id="@+id/videosFragment"
+        android:name="com.example.matches.videos.VideosFragment"
+        android:label="VideosFragment" />
+</navigation>
