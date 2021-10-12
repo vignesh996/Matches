@@ -84,6 +84,9 @@ dependencies {
     //for youtube videos
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
 
+    //for calender
+    implementation 'com.applandeo:material-calendar-view:1.7.0'
+
     //retrofit
     implementation 'com.google.code.gson:gson:2.8.7'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
