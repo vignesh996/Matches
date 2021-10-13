@@ -1,8 +1,7 @@
 package com.example.matches.home
 
+import android.app.DatePickerDialog
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.matches.BR
 import com.example.matches.R
 import com.example.matches.databinding.FragmentHomeBinding
+import java.text.SimpleDateFormat
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -23,6 +23,7 @@ class HomeFragment : Fragment() {
     lateinit var mViewModel: HomeViewModel
     lateinit var mDataBinding: FragmentHomeBinding
     private var category: String? = null
+    var myCalender = Calendar.getInstance()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +53,7 @@ class HomeFragment : Fragment() {
         // ViewModel execution
         executeViewModel()
 
-        editTextListenerImplementation()
-
+        dateImplementation()
         spinnerImplementation()
 
         mDataBinding.submitBtn.setOnClickListener {
@@ -64,66 +64,29 @@ class HomeFragment : Fragment() {
             Log.d("TAG", "homeFragment onViewCreated:${category} ")
             Log.d("TAG", "homeFragment onViewCreated:${mDataBinding.city.text} ")
         }
+
     }
 
-    private fun editTextListenerImplementation() {
-        var date = mDataBinding.date
-        date.addTextChangedListener(object : TextWatcher {
+    private fun dateImplementation() {
+        val datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+            myCalender.set(Calendar.YEAR,year)
+            myCalender.set(Calendar.MONTH,month)
+            myCalender.set(Calendar.DAY_OF_MONTH,dayOfMonth)
+            updateLable(myCalender)
+        }
 
-            private var current = ""
-            private var ddmmyyyy = "DDMMYYYY"
-            private var cal: Calendar = Calendar.getInstance()
+        mDataBinding.date.setOnClickListener {
+            DatePickerDialog(requireContext(), datePicker,myCalender.get(Calendar.YEAR),myCalender.get(Calendar.MONTH),
+                    myCalender.get(Calendar.DAY_OF_MONTH)).show()
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
 
-            }
+    }
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (s.toString() != current) {
-                    var clean = s.toString().replace("[^\\d.]|\\.".toRegex(), "")
-                    val cleanC = current.replace("[^\\d.]|\\.".toRegex(), "")
-                    val cl = clean.length
-                    var sel = cl
-                    var i = 2
-                    while (i <= cl && i < 6) {
-                        sel++
-                        i += 2
-                    }
-                    //Fix for pressing delete next to a forward slash
-                    if (clean == cleanC) sel--
-                    if (clean.length < 8) {
-                        clean = clean + ddmmyyyy.substring(clean.length)
-                    } else {
-                        //This part makes sure that when we finish entering numbers
-                        //the date is correct, fixing it otherwise
-                        var day = clean.substring(0, 2).toInt()
-                        var mon = clean.substring(2, 4).toInt()
-                        var year = clean.substring(4, 8).toInt()
-                        mon = if (mon < 1) 1 else if (mon > 12) 12 else mon
-                        cal[Calendar.MONTH] = mon - 1
-                        year = if (year < 1900) 1900 else if (year > 2100) 2100 else year
-                        cal[Calendar.YEAR] = year
-                        // ^ first set year for the line below to work correctly
-                        //with leap years - otherwise, date e.g. 29/02/2012
-                        //would be automatically corrected to 28/02/2012
-                        day = if (day > cal.getActualMaximum(Calendar.DATE)) cal.getActualMaximum(Calendar.DATE) else day
-                        clean = String.format("%02d%02d%02d", day, mon, year)
-                    }
-                    clean = String.format("%s/%s/%s", clean.substring(0, 2),
-                            clean.substring(2, 4),
-                            clean.substring(4, 8))
-                    sel = if (sel < 0) 0 else sel
-                    current = clean
-                    date.setText(current)
-                    date.setSelection(if (sel < current.length) sel else current.length)
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-
-        })
+    private fun updateLable(myCalender: Calendar) {
+        var myFormat = "dd-MM-yyyy"
+        var sdf = SimpleDateFormat(myFormat,Locale.UK)
+        mDataBinding.date.setText(sdf.format(myCalender.time))
     }
 
     private fun executeViewModel() {
@@ -141,7 +104,7 @@ class HomeFragment : Fragment() {
 
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
-                                            view: View, position: Int, id: Long) {
+                                            view: View?, position: Int, id: Long) {
                     category = resources.getStringArray(R.array.category)[position]
                 }
 

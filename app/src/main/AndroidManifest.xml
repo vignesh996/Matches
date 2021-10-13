@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Matches">
-        <activity android:name=".homeactivity.HomeActivity"></activity>
+        <activity android:name=".homeactivity.HomeActivity"
+            android:windowSoftInputMode="adjustPan"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
