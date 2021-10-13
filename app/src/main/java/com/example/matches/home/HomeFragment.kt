@@ -22,9 +22,7 @@ class HomeFragment : Fragment() {
 
     lateinit var mViewModel: HomeViewModel
     lateinit var mDataBinding: FragmentHomeBinding
-    private var category: String? = null
-    var myCalender = Calendar.getInstance()
-
+    private var selectedEventDate: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,59 +51,27 @@ class HomeFragment : Fragment() {
         // ViewModel execution
         executeViewModel()
 
-        dateImplementation()
         spinnerImplementation()
 
-        mDataBinding.submitBtn.setOnClickListener {
-            Log.d("TAG", "homeFragment onViewCreated:${mDataBinding.clubId.text} ")
-            Log.d("TAG", "homeFragment onViewCreated:${mDataBinding.playerName.text} ")
-            Log.d("TAG", "homeFragment onViewCreated:${mDataBinding.mobileNumber.text} ")
-            Log.d("TAG", "homeFragment onViewCreated:${mDataBinding.date.text} ")
-            Log.d("TAG", "homeFragment onViewCreated:${category} ")
-            Log.d("TAG", "homeFragment onViewCreated:${mDataBinding.city.text} ")
-        }
-
-    }
-
-    private fun dateImplementation() {
-        val datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-            myCalender.set(Calendar.YEAR,year)
-            myCalender.set(Calendar.MONTH,month)
-            myCalender.set(Calendar.DAY_OF_MONTH,dayOfMonth)
-            updateLable(myCalender)
-        }
-
-        mDataBinding.date.setOnClickListener {
-            DatePickerDialog(requireContext(), datePicker,myCalender.get(Calendar.YEAR),myCalender.get(Calendar.MONTH),
-                    myCalender.get(Calendar.DAY_OF_MONTH)).show()
+        mDataBinding.registerBtn.setOnClickListener {
 
         }
 
-    }
 
-    private fun updateLable(myCalender: Calendar) {
-        var myFormat = "dd-MM-yyyy"
-        var sdf = SimpleDateFormat(myFormat,Locale.UK)
-        mDataBinding.date.setText(sdf.format(myCalender.time))
-    }
-
-    private fun executeViewModel() {
-        mViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-        mDataBinding.setVariable(BR.homeViewModel, mViewModel)
-        mDataBinding.lifecycleOwner = this
-        mDataBinding.executePendingBindings()
     }
 
     private fun spinnerImplementation() {
-        var spinner = mDataBinding.category
+        var eventDates = arrayOf("22/10/2021","24/10/2021","26/10/2021","28/10/2021","30/10/2021")
+        var spinner = mDataBinding.eventDateList
         if (spinner != null) {
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, resources.getStringArray(R.array.category))
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, eventDates)
             spinner.adapter = adapter
 
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View?, position: Int, id: Long) {
-                    category = resources.getStringArray(R.array.category)[position]
+                    selectedEventDate = eventDates[position]
+                    Log.d("TAG", "onItemSelected: ${ selectedEventDate}")
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
@@ -114,5 +80,16 @@ class HomeFragment : Fragment() {
             }
         }
     }
+
+
+
+    private fun executeViewModel() {
+        mViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        mDataBinding.setVariable(BR.homeViewModel, mViewModel)
+        mDataBinding.lifecycleOwner = this
+        mDataBinding.executePendingBindings()
+    }
+
+
 
 }
